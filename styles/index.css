@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@200;300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+    margin: 0;
+    padding: 0;
+    margin: 0;
+}
+
+html,
+body {
+    position: relative;
+    overflow-x: hidden;
+    height: 100vh;
+    width: 100vw;
+}
+
+.darkBackground {
+    background: #18191A;
+    color: #fff;
+
+}
+
+/* 
+.tech-images span img {
+    max-width: 200px !important;
+} */
