@@ -1,0 +1,20 @@
+fragment SinglePostSnippet on Post {
+  id
+  title
+  creatorId
+  text
+  points
+  createdAt
+  imageURL
+  comments {
+    id
+    text
+    createdAt
+  }
+  commentCount
+  voteStatus
+  creator {
+    id
+    username
+  }
+}

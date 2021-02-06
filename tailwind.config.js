@@ -8,6 +8,7 @@ module.exports = {
   theme: {
     screens: {
       sm: "240px",
+      smormd: "600px",
       md: "768px",
       lg: "1024px",
       xl: "1280px",
@@ -29,7 +30,11 @@ module.exports = {
         700: "#4a5568",
         800: "#2d3748",
         900: "#1a202c",
+        925: "#282d33",
+        950: "#1E1E1E",
         1000: "#121212",
+        dark: "#1A202C",
+        darkNav: "#13171F",
       },
       red: {
         100: "#fff5f5",
@@ -206,6 +211,7 @@ module.exports = {
     borderWidth: {
       default: "1px",
       0: "0",
+
       2: "2px",
       4: "4px",
       8: "8px",
@@ -281,6 +287,7 @@ module.exports = {
         '"Courier New"',
         "monospace",
       ],
+      roboto: "Roboto",
       dosis: "Dosis",
     },
     fontSize: {
@@ -394,6 +401,7 @@ module.exports = {
       25: "0.25",
       50: "0.5",
       75: "0.75",
+      95: "95",
       100: "1",
     },
     order: {

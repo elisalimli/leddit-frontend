@@ -1,16 +1,18 @@
-import { AppProps } from "next/app";
-import "../styles/index.css";
 import { ThemeProvider } from "next-themes";
+import { AppProps } from "next/app";
+import "../src/styles/index.css";
+import { ChakraProvider } from "@chakra-ui/react";
+import { createPageProgressBar } from "../src/utils/createPageProgressBar";
 
 function App({ Component, pageProps }: AppProps) {
+  createPageProgressBar();
+
   return (
-    <div>
-      {typeof window === "undefined" ? null : (
-        <ThemeProvider attribute="class">
-          <Component {...pageProps} />
-        </ThemeProvider>
-      )}
-    </div>
+    <ThemeProvider attribute="class">
+      <ChakraProvider>
+        <Component {...pageProps} />
+      </ChakraProvider>
+    </ThemeProvider>
   );
 }
 
