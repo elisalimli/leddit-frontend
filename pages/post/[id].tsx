@@ -10,12 +10,13 @@ import { Layout } from "../../src/components/Other/Layout";
 import { Spinner } from "@chakra-ui/react";
 import SinglePost from "../../src/components/Post/SinglePost";
 import { useGetPostFromUrl } from "../../src/utils/hooks/useGetPostFromUrl";
+import { withApollo } from "../../src/utils/withApolloClient";
 
 const Post = ({}) => {
   const router = useRouter();
-  const [{ data, fetching }] = useGetPostFromUrl();
+  const { data, loading } = useGetPostFromUrl();
 
-  if (fetching) {
+  if (loading) {
     return (
       <Layout>
         <div className="flex justify-center">
@@ -40,4 +41,4 @@ const Post = ({}) => {
   );
 };
 
-export default withUrqlClient(createUqlClient, { ssr: true })(Post as any);
+export default withApollo({ ssr: true })(Post);

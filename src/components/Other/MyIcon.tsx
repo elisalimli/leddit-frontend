@@ -1,8 +1,7 @@
 import React from "react";
 import { IconButton } from "@chakra-ui/react";
-import Tippy from "@tippy.js/react";
+import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
-
 interface Props {
   onClick?: any;
   active?: boolean;

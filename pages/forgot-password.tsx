@@ -8,11 +8,12 @@ import { Button } from "@chakra-ui/react";
 import { Formik, Form } from "formik";
 import NextLink from "next/link";
 import Wrapper from "../src/components/Other/Wrapper";
+import { withApollo } from "../src/utils/withApolloClient";
 
 interface Props {}
 
 const ForgotPassword = (props: Props) => {
-  const [{}, forgotPassword] = useForgotPasswordMutation();
+  const [forgotPassword] = useForgotPasswordMutation();
   const [complete, setComplete] = useState(false);
 
   return (
@@ -20,7 +21,12 @@ const ForgotPassword = (props: Props) => {
       <Formik
         initialValues={{ email: "" }}
         onSubmit={async (values, {}) => {
-          await forgotPassword({ email: values.email });
+          const { email } = values;
+          await forgotPassword({
+            variables: {
+              email,
+            },
+          });
           setComplete(true);
         }}
       >
@@ -55,4 +61,4 @@ const ForgotPassword = (props: Props) => {
   );
 };
 
-export default withUrqlClient(createUqlClient)(ForgotPassword);
+export default withApollo({ ssr: false })(ForgotPassword);

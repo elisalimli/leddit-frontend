@@ -9,13 +9,14 @@ import { formHeader, form } from "../src/styles/global";
 import { useRouter } from "next/router";
 import InputField from "../src/components/Other/InputField";
 import { Formik, Form } from "formik";
+import { withApollo } from "../src/utils/withApolloClient";
 
 interface Props {}
 
-const register: React.FC<Props> = ({}) => {
-  const [{ data }] = useMeQuery();
+const Register: React.FC<Props> = ({}) => {
+  const { data } = useMeQuery();
   const router = useRouter();
-  let [{}, register] = useRegisterMutation();
+  let [register] = useRegisterMutation();
 
   if (data?.me) router.push("/");
 
@@ -23,7 +24,11 @@ const register: React.FC<Props> = ({}) => {
     <Formik
       initialValues={{ username: "", email: "", password: "" }}
       onSubmit={async (values, { setErrors }) => {
-        const res = await register({ options: values });
+        const res = await register({
+          variables: {
+            options: values,
+          },
+        });
 
         if (res.data?.register.errors) {
           setErrors(toErrorMap(res.data.register.errors));
@@ -69,4 +74,4 @@ const register: React.FC<Props> = ({}) => {
   );
 };
 
-export default withUrqlClient(createUqlClient)(register);
+export default withApollo({ ssr: true })(Register);

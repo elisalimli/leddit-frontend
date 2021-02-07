@@ -16,18 +16,16 @@ import { useSetActiveNavLink } from "../src/utils/hooks/useSetActiveNavLink";
 import { Formik, Form } from "formik";
 import InputField from "../src/components/Other/InputField";
 import NextLink from "next/link";
+import { withApollo } from "../src/utils/withApolloClient";
 
-const createPost: React.FC<{}> = ({}) => {
+const CreatePost: React.FC<{}> = ({}) => {
   const [state, setState] = useState({ imageURL: null, title: "", text: "" });
-  const [{ fetching }, createPost] = useCreatePostMutation();
+  const [createPost, { loading, data }] = useCreatePostMutation();
   const [imageLoading, setImageLoading] = useState(false);
   const router = useRouter();
   useIsAuth();
   useSetActiveNavLink(router.pathname);
   const inputFileId = "file";
-
-  const handleChange = (e: any) =>
-    setState({ ...state, [e.target.name]: e.target.value });
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     setImageLoading(true);
@@ -45,15 +43,14 @@ const createPost: React.FC<{}> = ({}) => {
       <Formik
         initialValues={state}
         onSubmit={async (values, { setErrors }) => {
-          const { error, data } = await createPost({
-            input: {
-              text: values.text,
-              title: values.title,
-              imageURL: state.imageURL,
+          const { errors, data } = await createPost({
+            variables: {
+              input: {
+                ...values,
+              },
             },
           });
-
-          if (!data?.createPost?.errors && !error) router.push("/");
+          if (!data?.createPost?.errors && !errors) router.push("/");
         }}
       >
         {({ isSubmitting }) => (
@@ -72,7 +69,7 @@ const createPost: React.FC<{}> = ({}) => {
             <Button
               mt={2}
               mr="auto"
-              disabled={fetching || imageLoading}
+              disabled={loading || imageLoading}
               isLoading={imageLoading}
               type="button"
               colorScheme="green"
@@ -93,7 +90,7 @@ const createPost: React.FC<{}> = ({}) => {
               mx="auto"
               mt="6"
               isLoading={isSubmitting}
-              disabled={fetching || imageLoading}
+              disabled={loading || imageLoading}
               type="submit"
               loadingText="Submitting"
               colorScheme="blue"
@@ -109,4 +106,4 @@ const createPost: React.FC<{}> = ({}) => {
   );
 };
 
-export default withUrqlClient(createUqlClient)(createPost);
+export default withApollo({ ssr: false })(CreatePost);

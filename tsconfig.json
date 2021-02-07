@@ -23,7 +23,7 @@
       "next-env.d.ts",
       "**/*.ts",
       "**/*.tsx"
-, "src/redux/types.ts", "pages/404.tsx"    ],
+, "src/redux/types.ts", "pages/404.tsx", "src/utils/createWithApollo.js", "src/utils/createWithApollo.js"    ],
     "exclude": [
       "node_modules"
     ]

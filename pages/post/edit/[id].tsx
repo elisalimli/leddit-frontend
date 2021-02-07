@@ -12,14 +12,15 @@ import NextLink from "next/link";
 import { useGetPostFromUrl } from "../../../src/utils/hooks/useGetPostFromUrl";
 import { useUpdatePostMutation } from "../../../src/generated/graphql";
 import { useGetIntId } from "../../../src/utils/hooks/useGetIntId";
+import { withApollo } from "../../../src/utils/withApolloClient";
 
 interface Props {}
 
 const EditPost = (props: Props) => {
-  const [{ data, fetching }] = useGetPostFromUrl();
-  const [{}, updatePost] = useUpdatePostMutation();
+  const { data, loading } = useGetPostFromUrl();
+  const [updatePost] = useUpdatePostMutation();
 
-  if (fetching) {
+  if (loading) {
     return (
       <Layout>
         <div className="flex justify-center">
@@ -27,7 +28,7 @@ const EditPost = (props: Props) => {
         </div>
       </Layout>
     );
-  } else if (!data?.post && !fetching) {
+  } else if (!data?.post && !loading) {
     return (
       <Layout>
         <h1 className="text-center text-3xl font-semibold ">
@@ -44,9 +45,10 @@ const EditPost = (props: Props) => {
           initialValues={{ title: data?.post?.title, text: data?.post?.text }}
           onSubmit={async (values, {}) => {
             await updatePost({
-              id: useGetIntId(router.query.id),
-              text: values.text,
-              title: values.title,
+              variables: {
+                ...values,
+                id: useGetIntId(router.query.id),
+              },
             });
             router.back();
           }}
@@ -85,4 +87,4 @@ const EditPost = (props: Props) => {
   );
 };
 
-export default withUrqlClient(createUqlClient)(EditPost);
+export default withApollo({ ssr: false })(EditPost);

@@ -2,23 +2,26 @@ import React from "react";
 import NextLink from "next/link";
 import { Link } from "@chakra-ui/react";
 import { Formik, Form } from "formik";
-import { useLoginMutation, useMeQuery } from "../src/generated/graphql";
+import {
+  useLoginMutation,
+  useMeQuery,
+  MeQuery,
+  MeDocument,
+} from "../src/generated/graphql";
 import { toErrorMap } from "../src/utils/toErrorMap";
 import { useRouter } from "next/router";
-import { createUqlClient } from "../src/utils/createUrqlClient";
-import { withUrqlClient } from "next-urql";
 import { Button } from "@chakra-ui/react";
 import InputField from "../src/components/Other/InputField";
 import { form, formHeader } from "../src/styles/global";
 import Wrapper from "../src/components/Other/Wrapper";
+import { withApollo } from "../src/utils/withApolloClient";
 
 interface Props {}
 
 const Login = ({}: Props) => {
   const router = useRouter();
-  let [{}, login] = useLoginMutation();
-  const [{ data }] = useMeQuery();
-  //------------------------------
+  let [login] = useLoginMutation();
+  const { data } = useMeQuery();
 
   if (data?.me && !router.query.next) {
     router.push("/");
@@ -29,7 +32,19 @@ const Login = ({}: Props) => {
       <Formik
         initialValues={{ usernameOrEmail: "", password: "" }}
         onSubmit={async (values, { setErrors }) => {
-          const res = await login(values);
+          const res = await login({
+            variables: values,
+            update: (cache, { data }) => {
+              cache.writeQuery<MeQuery>({
+                query: MeDocument,
+                data: {
+                  __typename: "Query",
+                  me: data.login.user,
+                },
+              });
+              cache.evict({ fieldName: "posts:{}" });
+            },
+          });
           if (res.data?.login.errors) {
             setErrors(toErrorMap(res.data.login.errors));
           } else if (res.data?.login.user) {
@@ -80,4 +95,4 @@ const Login = ({}: Props) => {
   );
 };
 
-export default withUrqlClient(createUqlClient)(Login);
+export default withApollo({ ssr: false })(Login);

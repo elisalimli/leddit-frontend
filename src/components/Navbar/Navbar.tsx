@@ -4,25 +4,23 @@ import content from "../../content";
 import Switch from "react-switch";
 import { useTheme } from "next-themes";
 import { useMeQuery } from "../../generated/graphql";
-
-//Redux
 import { isServer } from "../../utils/isServer";
 import Dropdown from "./Dropdown";
 import { linkNavbar } from "../../styles/global";
-import MyIcon from "../Other/MyIcon";
-import PlusIcon from "../icons/PlusIcon";
-import HomeIcon from "../icons/HomeIcon";
 import AuthUserNavLinks from "./AuthUserNavLinks";
 import { useColorMode } from "@chakra-ui/react";
 import MoonIcon from "../icons/MoonIcon";
 import SunIcon from "../icons/SunIcon";
+import { withApollo } from "../../utils/withApolloClient";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const { colorMode, toggleColorMode } = useColorMode();
-  const [{ data, fetching }] = useMeQuery({ pause: isServer() });
+  const { data, loading } = useMeQuery({ skip: isServer() });
   const [activeNav, setActiveNav] = useState(false);
+
+  console.log("me", data);
 
   const handleScrollPage = () => {
     if (window.scrollY > 60) setActiveNav(true);
@@ -55,7 +53,7 @@ const Navbar = () => {
         <Dropdown user={data.me} />
       </Fragment>
     );
-  } else if (!data?.me && !fetching)
+  } else if (!data?.me && !loading)
     body = (
       <>
         {content.nav.links.map((link, index) => (
@@ -70,7 +68,7 @@ const Navbar = () => {
 
   return (
     <div
-      className={`sticky  top-0 z-50 transition-colors  duration-700 ${
+      className={`sticky w-full top-0 z-50 transition-colors  duration-700 ${
         activeNav
           ? "bg-gray-200 dark:bg-gray-darkNav shadow-sm"
           : "bg-gray-100 dark:bg-transparent shadow-sm"
@@ -111,4 +109,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export default withApollo({ ssr: false })(Navbar);

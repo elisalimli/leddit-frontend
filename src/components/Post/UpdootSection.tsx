@@ -14,18 +14,28 @@ const UpdootSection: React.FC<Props> = ({
   const [loadingState, setLoadingState] = useState<
     "updoot-loading" | "downdoot-loading" | "not-loading"
   >("not-loading");
-  const [{}, vote] = useVoteMutation();
+  const [vote, {}] = useVoteMutation();
 
   const voteUp = async () => {
     if (voteStatus === 1) return;
     setLoadingState("updoot-loading");
-    await vote({ postId: id, value: 1 });
+    await vote({
+      variables: {
+        postId: id,
+        value: 1,
+      },
+    });
     setLoadingState("not-loading");
   };
   const voteDown = async () => {
     if (voteStatus === -1) return;
     setLoadingState("downdoot-loading");
-    await vote({ postId: id, value: -1 });
+    await vote({
+      variables: {
+        postId: id,
+        value: -1,
+      },
+    });
     setLoadingState("not-loading");
   };
 

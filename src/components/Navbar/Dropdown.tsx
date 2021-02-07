@@ -10,6 +10,7 @@ import {
   MenuItem,
   MenuDivider,
 } from "@chakra-ui/react";
+import { useApolloClient } from "@apollo/client";
 
 interface Props {
   user: { id: number; username: string };
@@ -17,11 +18,12 @@ interface Props {
 
 const Dropdown = ({ user }: Props) => {
   const router = useRouter();
-  const [{}, logout] = useLogoutMutation();
+  const apolloClient = useApolloClient();
+  const [logout] = useLogoutMutation();
 
   const onUserLogout = async () => {
     await logout();
-    router.reload();
+    await apolloClient.resetStore();
   };
 
   return (

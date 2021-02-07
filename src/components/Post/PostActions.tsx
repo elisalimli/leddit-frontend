@@ -6,11 +6,17 @@ import UpdateIcon from "../icons/UpdateIcon";
 import MyIcon from "../Other/MyIcon";
 
 const PostActions = ({ id, creatorId, mobile = true }) => {
-  const [{}, deletePost] = useDeletePostMutation();
-  const [{ data }] = useMeQuery();
+  const [deletePost] = useDeletePostMutation();
+  const { data } = useMeQuery();
 
   const onDeletePost = async () => {
-    await deletePost({ id });
+    await deletePost({
+      variables: { id },
+      update: (cache) => {
+        //Post:17
+        cache.evict({ id: "Post:" + id });
+      },
+    });
   };
 
   return data?.me?.id === creatorId ? (

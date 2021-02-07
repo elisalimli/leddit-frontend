@@ -13,10 +13,11 @@ import Input from "../../src/components/Other/InputField";
 import { Button } from "@chakra-ui/react";
 import { Formik, Form } from "formik";
 import InputField from "../../src/components/Other/InputField";
+import { withApollo } from "../../src/utils/withApolloClient";
 
 const ChangePassword: NextPage = () => {
   const router = useRouter();
-  let [{}, changePassword] = useChangePasswordMutation();
+  let [changePassword] = useChangePasswordMutation();
   const [tokenError, setTokenError] = useState("");
 
   return (
@@ -25,11 +26,14 @@ const ChangePassword: NextPage = () => {
         initialValues={{ newPassword: "" }}
         onSubmit={async (values, { setErrors }) => {
           const res = await changePassword({
-            newPassword: values.newPassword,
-            token:
-              typeof router.query.token === "string" ? router.query.token : "",
+            variables: {
+              newPassword: values.newPassword,
+              token:
+                typeof router.query.token === "string"
+                  ? router.query.token
+                  : "",
+            },
           });
-          console.log(res);
           if (res.data?.changePassword.errors) {
             const errorMap = toErrorMap(res.data.changePassword.errors);
             if ("token" in errorMap) {
@@ -80,4 +84,4 @@ const ChangePassword: NextPage = () => {
   );
 };
 
-export default withUrqlClient(createUqlClient)(ChangePassword);
+export default withApollo({ ssr: false })(ChangePassword);
