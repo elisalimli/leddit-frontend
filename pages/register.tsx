@@ -1,7 +1,12 @@
 import React, { useState } from "react";
 import NextLink from "next/link";
 import { Link, Button } from "@chakra-ui/react";
-import { useRegisterMutation, useMeQuery } from "../src/generated/graphql";
+import {
+  useRegisterMutation,
+  useMeQuery,
+  MeDocument,
+  MeQuery,
+} from "../src/generated/graphql";
 import { toErrorMap } from "../src/utils/toErrorMap";
 import { createUqlClient } from "../src/utils/createUrqlClient";
 import { withUrqlClient } from "next-urql";
@@ -27,6 +32,15 @@ const Register: React.FC<Props> = ({}) => {
         const res = await register({
           variables: {
             options: values,
+          },
+          update: (cache, { data }) => {
+            cache.writeQuery<MeQuery>({
+              query: MeDocument,
+              data: {
+                __typename: "Query",
+                me: data?.register.user,
+              },
+            });
           },
         });
 

@@ -2,11 +2,49 @@ import React, { useState } from "react";
 import ChevronDown from "../icons/ChevronDown";
 import ChevronUp from "../icons/ChevronUp";
 import MyIcon from "../Other/MyIcon";
-import { PostSnippetFragment, useVoteMutation } from "../../generated/graphql";
+import {
+  PostSnippetFragment,
+  useVoteMutation,
+  VoteMutation,
+} from "../../generated/graphql";
+import { ApolloCache, gql } from "@apollo/client";
 
 interface Props {
   post: PostSnippetFragment;
 }
+
+const updateAfterVote = (
+  value: number,
+  postId: number,
+  cache: ApolloCache<VoteMutation>
+) => {
+  const data = cache.readFragment({
+    id: "Post:" + postId,
+    fragment: gql`
+      fragment _ on Post {
+        id
+        points
+        voteStatus
+      }
+    `,
+  }) as PostSnippetFragment;
+
+  if (data) {
+    if (data.voteStatus === value) return;
+    const newPoints = data.points + (!data.voteStatus ? 1 : 2) * value;
+    cache.writeFragment({
+      id: "Post:" + postId,
+      fragment: gql`
+        fragment _ on Post {
+          id
+          points
+          voteStatus
+        }
+      `,
+      data: { id: postId, points: newPoints, voteStatus: value },
+    });
+  }
+};
 
 const UpdootSection: React.FC<Props> = ({
   post: { points, id, voteStatus, title, creatorId },
@@ -24,6 +62,9 @@ const UpdootSection: React.FC<Props> = ({
         postId: id,
         value: 1,
       },
+      update: (cache, { data }) => {
+        updateAfterVote(1, id, cache);
+      },
     });
     setLoadingState("not-loading");
   };
@@ -34,6 +75,9 @@ const UpdootSection: React.FC<Props> = ({
       variables: {
         postId: id,
         value: -1,
+      },
+      update: (cache, { data }) => {
+        updateAfterVote(-1, id, cache);
       },
     });
     setLoadingState("not-loading");

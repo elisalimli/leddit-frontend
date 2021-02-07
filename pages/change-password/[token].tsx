@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import NextLink from "next/link";
 import { Link } from "@chakra-ui/react";
-import { useChangePasswordMutation } from "../../src/generated/graphql";
+import {
+  MeDocument,
+  MeQuery,
+  useChangePasswordMutation,
+} from "../../src/generated/graphql";
 import { toErrorMap } from "../../src/utils/toErrorMap";
 import { useRouter } from "next/router";
 import Wrapper from "../../src/components/Other/Wrapper";
@@ -32,6 +36,16 @@ const ChangePassword: NextPage = () => {
                 typeof router.query.token === "string"
                   ? router.query.token
                   : "",
+            },
+            update: (cache, { data }) => {
+              cache.writeQuery<MeQuery>({
+                query: MeDocument,
+                data: {
+                  __typename: "Query",
+                  me: data.changePassword.user,
+                },
+              });
+              cache.evict({ fieldName: "posts:{}" });
             },
           });
           if (res.data?.changePassword.errors) {

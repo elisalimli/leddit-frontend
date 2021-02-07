@@ -49,6 +49,9 @@ const CreatePost: React.FC<{}> = ({}) => {
                 ...values,
               },
             },
+            update: (cache) => {
+              cache.evict({ fieldName: "posts:{}" });
+            },
           });
           if (!data?.createPost?.errors && !errors) router.push("/");
         }}
